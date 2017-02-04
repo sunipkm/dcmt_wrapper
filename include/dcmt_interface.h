@@ -5,17 +5,24 @@
 #include <limits.h>
 #include <randseed.h>
 #include <err_printer.h>
+#include <math.h>
 
 #ifndef MT_STRUCT_PARAMS
 mt_struct ** mts = NULL ;
 int mt_statecount ;
 int mt_alloc_stat = 1 ; //mts alloc status is assumed to be true
+int mt_primes [ 15 ] = { 521  , 607  , 1279 , 2203 ,
+2281 , 3217  , 4253 , 4423 ,
+9689 , 9941 , 11213 , 19937 ,
+21701 , 23209 , 44497 } ;
+double MT_MAX_RANGE ;
 #define MT_STRUCT_PARAMS 1
 #endif
 
 //These functions ARE NOT THREADSAFE and ARE NOT MEANT TO BE THREAD SAFE.
 int init_dcmt ( int count ) //initialize the arrays etc, returns true on success.
 {
+  MT_MAX_RANGE = pow ( 2 , 32 ) - 1 ;
   mt_statecount = count ; //total number of states in the system
   mts = ( mt_struct ** ) malloc ( count * sizeof ( mt_struct * ) ) ;
   if ( mts == NULL )
@@ -36,7 +43,9 @@ void destroy_dcmt ( void ) //must be used IF dcmt is setup using init_dcmt()
     err_print_func ( "Nothing to free as allocation failed." ) ;
 }
 
-int generator_dcmt ( void ) //returns true on success, false on failure.
+int generator_dcmt ( int prime_id ) /*returns true on success, false on failure. Takes as input
+integers in [0 , 15), which acts as an index to the array of the mersenne primes. The Mersenne
+primes are sorted smaller to larger, and the time taken to initialize the state vector is ~ O(p^3) */
 //must be used in conjunction with the init_dcmt() call, and only upon success.
 {
   if ( ! mt_alloc_stat )
@@ -44,12 +53,12 @@ int generator_dcmt ( void ) //returns true on success, false on failure.
     err_print_func ( "init_dcmt() call failed." );
     return 0 ;
   }
-  uint32_t dcmtidoffset ;
+  uint16_t dcmtidoffset ;
   uint32_t sgenrand_offset ;
   uint32_t sgenrand_id_coeff ;
   do {
-    dcmtidoffset = randseed ( ) ;
-  } while ( dcmtidoffset * mt_statecount < 1 ) ;
+    dcmtidoffset = ( uint16_t ) randseed ( ) ;
+  } while ( dcmtidoffset * mt_statecount > 65536 ) ; //state id can not exceed 65536.
   do {
     sgenrand_offset = randseed ( ) ;
     sgenrand_id_coeff = randseed ( ) ;
@@ -68,7 +77,7 @@ int generator_dcmt ( void ) //returns true on success, false on failure.
        9689  9941 11213 19937
        21701 23209 44497
     */
-    mts [ i ] = get_mt_parameter_id_st ( 32 , 4253 , dcmtidoffset * i , randseed ( ) );
+    mts [ i ] = get_mt_parameter_id_st ( 32 , mt_primes [ prime_id ] , dcmtidoffset * i , randseed ( ) );
     if ( mts [ i ] == NULL )
     {
       char str [ 512 ] ;
@@ -96,7 +105,7 @@ int rand_mt ( int id ) //id must range from 0 to mt_statecount
 
 double random_mt ( int id ) //id must range from 0 to mt_statecount
 {
-  return ( double ) genrand_mt ( mts [ id ] ) / RAND_MAX ;
+  return ( ( 1. * genrand_mt ( mts [ id ] ) ) / MT_MAX_RANGE ) ;
 }
 
 uint32_t brand_mt ( int id , int range ) //returns random integers in [ 0 , b ), b > 0 is assumed.
