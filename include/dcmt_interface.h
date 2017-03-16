@@ -63,7 +63,7 @@ primes are sorted smaller to larger, and the time taken to initialize the state 
     sgenrand_offset = randseed ( ) ;
     sgenrand_id_coeff = randseed ( ) ;
   } while ( sgenrand_id_coeff * sgenrand_offset < 1 && sgenrand_id_coeff * mt_statecount < 1 ) ; //ensures that the coeff and the offset are not too large, and any of the state ids don't become zero.
-  for ( int i = mt_statecount - 1 ; i >= 0 ; i-- )
+  for ( int i = 0 ; i < mt_statecount ; i++ )
   {
     //tries to find an MT parameter space with p = 4253, available are:
     /*
@@ -81,7 +81,7 @@ primes are sorted smaller to larger, and the time taken to initialize the state 
     if ( mts [ i ] == NULL )
     {
       char str [ 512 ] ;
-      sprintf ( str , "Error on thread %d during MT parameter space initialization." , mt_statecount - i ) ;
+      sprintf ( str , "Error on thread %d during MT parameter space initialization." , i ) ;
       err_print_func ( str ) ;
       return 0 ;
     }
