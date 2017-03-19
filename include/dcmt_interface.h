@@ -48,6 +48,7 @@ integers in [0 , 15), which acts as an index to the array of the mersenne primes
 primes are sorted smaller to larger, and the time taken to initialize the state vector is ~ O(p^3) */
 //must be used in conjunction with the init_dcmt() call, and only upon success.
 {
+  uint8_t err_stat = 0 ;
   if ( ! mt_alloc_stat )
   {
     err_print_func ( "init_dcmt() call failed." );
@@ -83,12 +84,15 @@ primes are sorted smaller to larger, and the time taken to initialize the state 
       char str [ 512 ] ;
       sprintf ( str , "Error on thread %d during MT parameter space initialization." , i ) ;
       err_print_func ( str ) ;
-      return 0 ;
+      err_stat = 1 ;
     }
     else
       sgenrand_mt ( sgenrand_offset + sgenrand_id_coeff * i , mts [ i ] ) ; //initializes the state vector
-    return 1 ;
   }
+  if ( err_stat )
+    return 0 ;
+  else
+    return 1 ;
 }
 
 //before using any of the below functions make sure that generator_dcmt ( ) returned true.
