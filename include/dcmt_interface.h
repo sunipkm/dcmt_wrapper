@@ -7,6 +7,18 @@
 #include <err_printer.h>
 #include <math.h>
 
+//function prototypes
+int init_dcmt ( int count ) ; //initializes required MT globals, takes Nthreads as input. Returns 1 on success and 0 on failure.
+int generator_dcmt ( int prime_id ) ; //initializes MT state vectors with cryptographically random seeds (/dev/urandom) with
+//given MT prime id.
+void destroy_dcmt ( void ) ; //clears the memory used by MT states.
+
+uint32_t urand_mt ( int id ) ; //returns unsigned 32-bit random number from process id `id`.
+int rand_mt ( int id ) ;
+double random_mt ( int id ) ;
+uint32_t brand_mt ( int id , int range ) ;
+uint32_t abrand_mt ( int id , int low , int up ) ;
+
 #ifndef MT_STRUCT_PARAMS
 mt_struct ** mts = NULL ;
 int mt_statecount ;
@@ -22,6 +34,8 @@ double MT_MAX_RANGE ;
 //These functions ARE NOT THREADSAFE and ARE NOT MEANT TO BE THREAD SAFE.
 int init_dcmt ( int count ) //initialize the arrays etc, returns true on success.
 {
+  if ( count < 1 )
+    return 0 ;
   MT_MAX_RANGE = pow ( 2 , 32 ) - 1 ;
   mt_statecount = count ; //total number of states in the system
   mts = ( mt_struct ** ) malloc ( count * sizeof ( mt_struct * ) ) ;
