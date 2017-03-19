@@ -4,4 +4,8 @@ Having *DCMT library* is a *prerequisite*. You can obtain the version 0.6.3. You
 
 You can compile "example.c" in src/, you can either use OpenMP flags, or may not use it. The code will compile nevertheless. Without OpenMP you will not have multithreading.
 
-You'd find the required libraries [Here](https://github.com/MersenneTwister-Lab/dcmt)
+You'd find the required libraries [Here](https://github.com/MersenneTwister-Lab/dcmt).
+
+Compilation:
+
+CC -O2 src/example.c -I./include -ldcmt -fopenmp -lm -o ./example
