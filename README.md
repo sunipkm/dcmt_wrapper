@@ -8,4 +8,4 @@ You'd find the required libraries [Here](https://github.com/MersenneTwister-Lab/
 
 Compilation:
 
-<$CC -O2 src/example.c -I./include -ldcmt -fopenmp -lm -o ./example>
+`$ CC -O2 src/example.c -I./include -ldcmt -fopenmp -lm -o ./example`
