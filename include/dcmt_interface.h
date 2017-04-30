@@ -111,22 +111,22 @@ primes are sorted smaller to larger, and the time taken to initialize the state 
 
 //before using any of the below functions make sure that generator_dcmt ( ) returned true.
 //THE generating functions ARE THREADSAFE.
-uint32_t urand_mt ( int id ) //id must range from 0 to mt_statecount
+inline uint32_t urand_mt ( int id ) //id must range from 0 to mt_statecount
 {
   return ( uint32_t ) genrand_mt ( mts [ id ] ) ;
 }
 
-int rand_mt ( int id ) //id must range from 0 to mt_statecount
+inline int rand_mt ( int id ) //id must range from 0 to mt_statecount
 {
   return ( int ) genrand_mt ( mts [ id ] ) ;
 }
 
-double random_mt ( int id ) //id must range from 0 to mt_statecount
+inline double random_mt ( int id ) //id must range from 0 to mt_statecount
 {
   return ( ( 1. * genrand_mt ( mts [ id ] ) ) / MT_MAX_RANGE ) ;
 }
 
-uint32_t brand_mt ( int id , int range ) //returns random integers in [ 0 , b ), b > 0 is assumed.
+inline uint32_t brand_mt ( int id , int range ) //returns random integers in [ 0 , b ), b > 0 is assumed.
 {
   uint32_t r , limit = RAND_MAX - range ;
   do {
@@ -135,7 +135,7 @@ uint32_t brand_mt ( int id , int range ) //returns random integers in [ 0 , b ),
   return ( r % range ) ;
 }
 
-uint32_t abrand_mt ( int id , int low , int up ) //returns random integers in [ low , up ), up > low >= 0 is assumed.
+inline uint32_t abrand_mt ( int id , int low , int up ) //returns random integers in [ low , up ), up > low >= 0 is assumed.
 {
   uint32_t r , limit = RAND_MAX - ( low + up ) ;
   do {
